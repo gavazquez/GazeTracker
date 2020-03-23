@@ -1,7 +1,11 @@
 # GazeTracker
-Simplified OpenGaze tracker
+Simplified OpenGaze tracker that uses AI to track the orientation and position of your face using a webcam
 
-Copied and simplified gui version from [OpenFace](https://github.com/TadasBaltrusaitis/OpenFace)
+Copied and simplified version from [OpenFace](https://github.com/TadasBaltrusaitis/OpenFace)  
+The idea is to make it work with [OpenTrack](https://github.com/opentrack/opentrack) trough UDP
+
+## Download:
+ Just go to the [releases](../releases) page
 
 ## Building:
 
