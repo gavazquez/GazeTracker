@@ -1,0 +1,81 @@
+﻿<Window x:Class="GazeTracker.Windows.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="GazeTracker" MinHeight="400" MinWidth="640" WindowStartupLocation="CenterScreen" UseLayoutRounding="True" Closing="Window_Closing">
+    <Window.Resources>
+        <Style TargetType="{x:Type Image}">
+            <Setter Property="RenderOptions.BitmapScalingMode" 
+               Value="Fant" />
+        </Style>
+    </Window.Resources>
+    <Grid Name="MainGrid" HorizontalAlignment="Stretch" MinWidth="620">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition MinWidth="300"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition MinWidth="10" Width="auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10"/>
+            <RowDefinition MinHeight="200"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+
+        <Label HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Column="1" Grid.Row="1" Background="DarkSalmon" Canvas.ZIndex="1" MouseDown="ResetButton_Click" Name="ResetButton" Content="Reset"/>
+
+        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal">
+                <Label Height="30" Width="80" Margin="5,0,0,0" FontSize="16" HorizontalContentAlignment="Left" >Udp port:</Label>
+                <TextBox Name="UdpPort" Height="25" Width="60" Margin="0,5,0,0" PreviewTextInput="UdpPort_PreviewTextInput" TextChanged="UdpPort_TextChanged" HorizontalAlignment="Right" FontSize="16" TextWrapping="Wrap" Text="5000" RenderTransformOrigin="2.006,0.505" />
+            </StackPanel>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="2" VerticalAlignment="Top">
+            <Button Name="PauseButton" Click="PauseButton_Click">Pause</Button>
+            <StackPanel VerticalAlignment="Center" Margin="0,20,0,0" Width="185">
+                <Label Name="headOrientationLabel" Margin="0,0,0,0" FontSize="18"  HorizontalContentAlignment="Left">Head Orientation</Label>
+                <StackPanel Orientation="Horizontal">
+                    <Label Margin="5,0,0,0" FontSize="16" Width="80" HorizontalContentAlignment="Left">Turn:</Label>
+                    <Label Name="YawLabel" FontSize="16" MinWidth="30" HorizontalContentAlignment="Right">0°</Label>
+                    <Label Name="YawLabelDir" FontSize="16" Width="70" HorizontalContentAlignment="Left">straight</Label>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Margin="5,0,0,0" FontSize="16"  Width="80" HorizontalContentAlignment="Left">Up/down:</Label>
+                    <Label Name="PitchLabel" FontSize="16" Width="30" HorizontalContentAlignment="Right">0°</Label>
+                    <Label Name="PitchLabelDir" FontSize="16" Width="70" HorizontalContentAlignment="Left">straight</Label>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Margin="5,0,0,0" FontSize="16"  Width="80" HorizontalContentAlignment="Left">Tilt:</Label>
+                    <Label Name="RollLabel" FontSize="16" Width="30" HorizontalContentAlignment="Right">0°</Label>
+                    <Label Name="RollLabelDir" FontSize="16" Width="70" HorizontalContentAlignment="Left">straight</Label>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal"/>
+                <StackPanel Orientation="Horizontal"/>
+                <Label Name="headPoseLabel" Margin="0,0,0,0" FontSize="18" HorizontalContentAlignment="Left">Position</Label>
+                <StackPanel Orientation="Horizontal">
+                    <Label Margin="5,0,0,0" FontSize="16" HorizontalContentAlignment="Left"  Width="20">X:</Label>
+                    <Label Name="XPoseLabel" FontSize="16" HorizontalContentAlignment="Right" Width="70">0 mm</Label>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Margin="5,0,0,0" FontSize="16" HorizontalContentAlignment="Left"  Width="20">Y:</Label>
+                    <Label Name="YPoseLabel" FontSize="16" HorizontalContentAlignment="Right" Width="70">0 mm</Label>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Margin="5,0,0,0" FontSize="16" HorizontalContentAlignment="Left"  Width="20">Z:</Label>
+                    <Label Name="ZPoseLabel" FontSize="16" HorizontalContentAlignment="Right" Width="70">0 mm</Label>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel VerticalAlignment="Center" Width="185">
+                <Label Margin="0,0,0,0" FontSize="18" HorizontalAlignment="Left">Settings</Label>
+                <StackPanel Orientation="Horizontal" Margin="0,10,0,0" VerticalAlignment="Top">
+                    <CheckBox Name="CbxShowBox" Unchecked="CbxShowBox_OnChecked" Checked="CbxShowBox_OnChecked" IsChecked="True" HorizontalAlignment="Left" Content="Show box"/>
+                    <CheckBox Name="CbxShowLandmarks" Unchecked="CbxShowLandmarks_OnChecked" Checked="CbxShowLandmarks_OnChecked" IsChecked="True" HorizontalAlignment="Right" Margin="10,0,0,0" Content="Show dots"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+                    <CheckBox Name="CbxShowEyes" Unchecked="CbxShowEyes_OnChecked" Checked="CbxShowEyes_OnChecked" IsChecked="True" HorizontalAlignment="Left" Margin="0,10,0,0" Content="Show eyes"/>
+                    <CheckBox Name="CbxShowGazeLines" Unchecked="CbxShowGazeLines_OnChecked" Checked="CbxShowGazeLines_OnChecked" IsChecked="True" HorizontalAlignment="Right" Margin="7,10,0,0" Content="Show gaze"/>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

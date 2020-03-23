@@ -7,7 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
-namespace GazeTracker
+namespace GazeTracker.Windows
 {
     public partial class CameraSelection : Window
     {
