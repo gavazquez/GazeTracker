@@ -252,14 +252,14 @@ namespace GazeTracker
                             webcam_img.OverlayEyePoints.Add(eye_landmark_points);
                             webcam_img.GazeLines.Add(gaze_lines);
 
-                            //Pose[0] = X
-                            //Pose[1] = Y
-                            //Pose[2] = Z
-                            //Pose[3] = pitch
-                            //Pose[4] = yaw
-                            //Pose[5] = roll
+                            var udpX = pose[0] * -0.1;
+                            var udpY = pose[1] * 0.1;
+                            var udpZ = pose[2] * 0.1;
+                            var udpPitch = pose[3] * 180 / Math.PI * -1;
+                            var udpYaw = pose[4] * 180 / Math.PI * -1;
+                            var udpRoll = pose[5] * 180 / Math.PI * -1;
 
-                            double[] udp_pose = { pose[0], pose[1], pose[2], pose[3], pose[4], pose[5] };
+                            double[] udp_pose = { udpX, udpY, udpZ, udpYaw, udpPitch, udpRoll };
                             var bytes = udp_pose.SelectMany(BitConverter.GetBytes).ToArray();
                             lock (client)
                             {
