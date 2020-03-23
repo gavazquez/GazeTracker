@@ -6,15 +6,17 @@ using OpenFaceOffline;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using UtilitiesOF;
-using ZeroMQ;
 
 namespace HeadPoseLive
 {
@@ -55,12 +57,10 @@ namespace HeadPoseLive
 
         private readonly CancellationTokenSource tokenSource = new CancellationTokenSource();
 
-        // For broadcasting the results
-        private readonly ZContext zero_mq_context;
-        private readonly ZSocket zero_mq_socket;
-
         private volatile bool running = true;
         private volatile bool pause = false;
+
+        UdpClient client = new UdpClient();
 
         static MainWindow() { }
 
@@ -88,12 +88,8 @@ namespace HeadPoseLive
 
                 if (reader.IsOpened())
                 {
-                    // Create the ZeroMQ context for broadcasting the results
-                    zero_mq_context = ZContext.Create();
-                    zero_mq_socket = new ZSocket(zero_mq_context, ZSocketType.PUB);
-
-                    // Bind on localhost port 5000
-                    zero_mq_socket.Bind("tcp://127.0.0.1:5000");
+                    var ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5000);
+                    client.Connect(ep);
 
                     Task.Factory.StartNew(() => VideoLoop(reader, tokenSource.Token), TaskCreationOptions.LongRunning);
                 }
@@ -264,15 +260,12 @@ namespace HeadPoseLive
                             webcam_img.OverlayEyePoints.Add(eye_landmark_points);
                             webcam_img.GazeLines.Add(gaze_lines);
 
-                            // Publish the information for other applications
-                            string str_head_pose = string.Format("{0}:{1:F2}, {2:F2}, {3:F2}, {4:F2}, {5:F2}, {6:F2}", "HeadPose", pose[0], pose[1], pose[2],
-                                pose[3] * 180 / Math.PI, pose[4] * 180 / Math.PI, pose[5] * 180 / Math.PI);
-
-                            zero_mq_socket.Send(new ZFrame(str_head_pose, Encoding.UTF8));
-
-                            string str_gaze = string.Format("{0}:{1:F2}, {2:F2}", "GazeAngle", gaze_angle.Item1 * (180.0 / Math.PI), gaze_angle.Item2 * (180.0 / Math.PI));
-
-                            zero_mq_socket.Send(new ZFrame(str_gaze, Encoding.UTF8));
+                            double[] udp_pose = new double[] { pose[0], pose[1], pose[2], pose[3], pose[4], pose[5] };
+                            var bytes = udp_pose.SelectMany(BitConverter.GetBytes).ToArray();
+                            lock (client)
+                            {
+                                client.Send(bytes, bytes.Length);
+                            }
                         }
                     }));
 
@@ -312,6 +305,20 @@ namespace HeadPoseLive
         {
             pause = !pause;
             PauseButton.Content = pause ? "Resume" : "Pause";
+        }
+
+        private void UdpPort_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var ep = new IPEndPoint(IPAddress.Loopback, ushort.Parse(UdpPort.Text));
+            lock (client)
+            {
+                client.Connect(ep);
+            }
+        }
+
+        private void UdpPort_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !ushort.TryParse(e.Text, out _);
         }
     }
 }

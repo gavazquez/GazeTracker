@@ -75,11 +75,10 @@
                 <Label Margin="5,0,0,0" FontSize="16" HorizontalContentAlignment="Left"  Width="20">Z:</Label>
                 <Label Name="ZPoseLabel" FontSize="16" HorizontalContentAlignment="Right" Width="70">0 mm</Label>
             </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Margin="5,0,0,0" FontSize="16" HorizontalContentAlignment="Left"  Width="80">Udp port:</Label>
+                <TextBox Name="UdpPort" PreviewTextInput="UdpPort_PreviewTextInput" TextChanged="UdpPort_TextChanged" HorizontalAlignment="Right" FontSize="16" TextWrapping="Wrap" Text="5000" VerticalAlignment="Bottom" Width="100" RenderTransformOrigin="2.006,0.505" Height="27"/>
+            </StackPanel>
         </StackPanel>
-
-        <StackPanel  HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
-            <Image RenderOptions.BitmapScalingMode="Fant"  RenderOptions.EdgeMode="Aliased"  x:Name="logoLabel" Stretch="Uniform" />
-        </StackPanel>
-
     </Grid>
 </Window>
