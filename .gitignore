@@ -1,0 +1,11 @@
+*.user
+*.userprefs
+.idea/
+.vs/
+obj/
+TestResults/
+**/*.csproj.user
+**/bin/*
+**/obj/*
+*.nupkg
+**/[Pp]ackages/*
