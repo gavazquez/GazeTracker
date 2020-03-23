@@ -252,9 +252,11 @@ namespace GazeTracker
                             webcam_img.OverlayEyePoints.Add(eye_landmark_points);
                             webcam_img.GazeLines.Add(gaze_lines);
 
+                            //XYZ values are in millimeters but open-track needs them in centimeters
                             var udpX = pose[0] * -0.1;
                             var udpY = pose[1] * 0.1;
                             var udpZ = pose[2] * 0.1;
+
                             var udpPitch = pose[3] * 180 / Math.PI * -1;
                             var udpYaw = pose[4] * 180 / Math.PI * -1;
                             var udpRoll = pose[5] * 180 / Math.PI * -1;
