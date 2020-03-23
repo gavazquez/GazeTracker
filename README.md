@@ -5,7 +5,7 @@ Copied and simplified version from [OpenFace](https://github.com/TadasBaltrusait
 The idea is to make it work with [OpenTrack](https://github.com/opentrack/opentrack) trough UDP
 
 ## Download:
- Just go to the [releases](../releases) page
+ Just go to the [releases](../../releases) page
 
 ## Building:
 
