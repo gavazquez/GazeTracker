@@ -3,7 +3,7 @@
 .idea/
 .vs/
 obj/
-TestResults/
+Libs/model/patch_experts/*.dat
 **/*.csproj.user
 **/bin/*
 **/obj/*
