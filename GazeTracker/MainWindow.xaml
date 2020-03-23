@@ -55,18 +55,9 @@
                 <Label Name="RollLabel" FontSize="16" Width="30" HorizontalContentAlignment="Right">0°</Label>
                 <Label Name="RollLabelDir" FontSize="16" Width="70" HorizontalContentAlignment="Left">straight</Label>
             </StackPanel>
-            <Label Name="gazeLabel" Margin="0,0,0,0" FontSize="18"  HorizontalContentAlignment="Left">Gaze Orientation</Label>
-            <StackPanel Orientation="Horizontal">
-                <Label Margin="5,0,0,0" FontSize="16" Width="80" HorizontalContentAlignment="Left">Left-right:</Label>
-                <Label Name="YawLabelGaze" FontSize="16" MinWidth="30" HorizontalContentAlignment="Right">0°</Label>
-                <Label Name="YawLabelGazeDir" FontSize="16" Width="70" HorizontalContentAlignment="Left">straight</Label>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label Margin="5,0,0,0" FontSize="16"  Width="80" HorizontalContentAlignment="Left">Up/down:</Label>
-                <Label Name="PitchLabelGaze" FontSize="16" Width="30" HorizontalContentAlignment="Right">0°</Label>
-                <Label Name="PitchLabelGazeDir" FontSize="16" Width="70" HorizontalContentAlignment="Left">straight</Label>
-            </StackPanel>
-            <Label Name="headPoseLabel" Margin="0,0,0,0" FontSize="18" HorizontalContentAlignment="Left">Pose</Label>
+            <StackPanel Orientation="Horizontal"/>
+            <StackPanel Orientation="Horizontal"/>
+            <Label Name="headPoseLabel" Margin="0,0,0,0" FontSize="18" HorizontalContentAlignment="Left">Position</Label>
             <StackPanel Orientation="Horizontal">
                 <Label Margin="5,0,0,0" FontSize="16" HorizontalContentAlignment="Left"  Width="20">X:</Label>
                 <Label Name="XPoseLabel" FontSize="16" HorizontalContentAlignment="Right" Width="70">0 mm</Label>

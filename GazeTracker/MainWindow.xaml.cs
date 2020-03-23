@@ -169,7 +169,6 @@ namespace GazeTracker
                 List<Tuple<float, float>> eye_landmarks = new List<Tuple<float, float>>();
                 List<Point> landmarks = new List<Point>();
                 List<Tuple<Point, Point>> gaze_lines = new List<Tuple<Point, Point>>();
-                Tuple<float, float> gaze_angle = new Tuple<float, float>(0, 0);
                 var visibilities = face_model.GetVisibilities();
                 double scale = face_model.GetRigidParams()[0];
 
@@ -181,7 +180,6 @@ namespace GazeTracker
                     eye_landmarks = face_model.CalculateVisibleEyeLandmarks();
 
                     gaze_lines = gaze_analyser.CalculateGazeLines(reader.GetFx(), reader.GetFy(), reader.GetCx(), reader.GetCy());
-                    gaze_angle = gaze_analyser.GetGazeAngle();
 
                     lines = face_model.CalculateBox(reader.GetFx(), reader.GetFy(), reader.GetCx(), reader.GetCy());
                 }
@@ -224,11 +222,6 @@ namespace GazeTracker
                         YPoseLabel.Content = (int)pose[1] + " mm";
                         ZPoseLabel.Content = (int)pose[2] + " mm";
 
-                        YawLabelGaze.Content = string.Format("{0:F0}°", gaze_angle.Item1 * (180.0 / Math.PI));
-                        PitchLabelGaze.Content = string.Format("{0:F0}°", gaze_angle.Item2 * (180.0 / Math.PI));
-
-                        YawLabelGazeDir.Content = gaze_angle.Item1 > 0 ? "Right" : gaze_angle.Item1 < 0 ? "Left" : "Straight";
-                        PitchLabelGazeDir.Content = gaze_angle.Item2 > 0 ? "Down" : gaze_angle.Item2 < 0 ? "Up" : "Straight";
 
                         double confidence = face_model.GetConfidence();
 
@@ -259,7 +252,14 @@ namespace GazeTracker
                             webcam_img.OverlayEyePoints.Add(eye_landmark_points);
                             webcam_img.GazeLines.Add(gaze_lines);
 
-                            double[] udp_pose = new double[] { pose[0], pose[1], pose[2], pose[3], pose[4], pose[5] };
+                            //Pose[0] = X
+                            //Pose[1] = Y
+                            //Pose[2] = Z
+                            //Pose[3] = pitch
+                            //Pose[4] = yaw
+                            //Pose[5] = roll
+
+                            double[] udp_pose = { pose[0], pose[1], pose[2], pose[3], pose[4], pose[5] };
                             var bytes = udp_pose.SelectMany(BitConverter.GetBytes).ToArray();
                             lock (client)
                             {
