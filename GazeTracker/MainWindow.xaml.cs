@@ -2,7 +2,6 @@
 using FaceDetectorInterop;
 using GazeAnalyser_Interop;
 using OpenCVWrappers;
-using OpenFaceOffline;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,7 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using UtilitiesOF;
 
-namespace HeadPoseLive
+namespace GazeTracker
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -58,7 +57,7 @@ namespace HeadPoseLive
         private readonly CancellationTokenSource tokenSource = new CancellationTokenSource();
 
         private volatile bool running = true;
-        private volatile bool pause = false;
+        private volatile bool pause;
 
         UdpClient client = new UdpClient();
 
@@ -318,7 +317,7 @@ namespace HeadPoseLive
 
         private void UdpPort_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            e.Handled = !ushort.TryParse(e.Text, out _);
+            e.Handled = !ushort.TryParse(UdpPort.Text + e.Text, out _);
         }
     }
 }

@@ -1,9 +1,8 @@
-﻿<Window x:Class="OpenFaceOffline.CameraSelection"
+﻿<Window x:Class="GazeTracker.CameraSelection"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:OpenFaceOffline"
         mc:Ignorable="d"
         Title="Camera selection" Height="460" Width="600" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Closing="Window_Closing">
     <Grid>

@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace ttt
+namespace GazeTracker
 {
     /// <summary>
     /// Interaction logic for App.xaml

@@ -1,8 +1,7 @@
-﻿using HeadPoseLive;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
-namespace OpenFaceOffline
+namespace GazeTracker
 {
     public class FpsTracker
     {

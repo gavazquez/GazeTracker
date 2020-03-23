@@ -7,39 +7,33 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
-namespace OpenFaceOffline
+namespace GazeTracker
 {
-    /// <summary>
-    /// Interaction logic for CameraSelection.xaml
-    /// </summary>
     public partial class CameraSelection : Window
     {
-
-        List<Border> sample_images;
-        List<ComboBox> combo_boxes;
+        private List<Border> sample_images;
+        private List<ComboBox> combo_boxes;
 
         // id, width, height
         public Tuple<int, int, int> selected_camera;
 
-        List<List<Tuple<int, int>>> resolutions_all;
-        int selected_camera_idx = -1;
+        private List<List<Tuple<int, int>>> resolutions_all;
+        private int selected_camera_idx = -1;
 
         // indicate if user clicked on camera
-        public bool camera_selected = false;
+        public bool camera_selected;
+        public bool no_cameras_found;
 
-        public bool no_cameras_found = false;
-
-        public List<Tuple<int, String, List<Tuple<int, int>>, OpenCVWrappers.RawImage>> cams;
+        public List<Tuple<int, string, List<Tuple<int, int>>, OpenCVWrappers.RawImage>> cams;
 
         public void PopulateCameraSelections()
         {
-            this.KeyDown += new KeyEventHandler(CameraSelection_KeyDown);
+            KeyDown += CameraSelection_KeyDown;
 
             // Finding the cameras here
             if (cams == null)
             {
-                String root = AppDomain.CurrentDomain.BaseDirectory;
-                //cams = CameraInterop.Capture.GetCameras(root);
+                string root = AppDomain.CurrentDomain.BaseDirectory;
                 cams = UtilitiesOF.SequenceReader.GetCameras(root);
             }
 
@@ -77,7 +71,7 @@ namespace OpenFaceOffline
 
                     Label camera_name_label = new Label();
                     camera_name_label.Content = s.Item2;
-                    camera_name_label.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
+                    camera_name_label.HorizontalAlignment = HorizontalAlignment.Center;
                     img_panel.Children.Add(camera_name_label);
                     img.Height = 200;
                     img_panel.Children.Add(img);
@@ -113,48 +107,29 @@ namespace OpenFaceOffline
                     resolutions.SetValue(Grid.RowProperty, 2);
                     ThumbnailPanel.Children.Add(resolutions);
 
-                    img_panel.MouseDown += (sender, e) =>
-                    {
-                        ChooseCamera(idx);
-                    };
-
-                    resolutions.DropDownOpened += (sender, e) =>
-                    {
-                        ChooseCamera(idx);
-                    };
+                    img_panel.MouseDown += (sender, e) => ChooseCamera(idx);
+                    resolutions.DropDownOpened += (sender, e) => ChooseCamera(idx);
 
                 });
 
                 i++;
-
             }
             if (cams.Count > 0)
             {
                 no_cameras_found = false;
-                Dispatcher.Invoke(DispatcherPriority.Render, new TimeSpan(0, 0, 0, 0, 200), (Action)(() =>
-                {
-                    ChooseCamera(0);
-                }));
+                Dispatcher.Invoke(DispatcherPriority.Render, new TimeSpan(0, 0, 0, 0, 200), (Action)(() => ChooseCamera(0)));
             }
             else
             {
-                string messageBoxText = "No cameras detected, please connect a webcam";
-                string caption = "Camera error!";
-                MessageBoxButton button = MessageBoxButton.OK;
-                MessageBoxImage icon = MessageBoxImage.Warning;
-                MessageBox.Show(messageBoxText, caption, button, icon);
+                MessageBox.Show("No cameras detected, please connect a webcam", "Camera error!", MessageBoxButton.OK, MessageBoxImage.Warning);
                 selected_camera_idx = -1;
                 no_cameras_found = true;
-                Dispatcher.Invoke(DispatcherPriority.Render, new TimeSpan(0, 0, 0, 0, 200), (Action)(() =>
-                {
-                    this.Close();
-                }));
+                Dispatcher.Invoke(DispatcherPriority.Render, new TimeSpan(0, 0, 0, 0, 200), (Action)(Close));
             }
         }
 
         public CameraSelection()
         {
-
             InitializeComponent();
 
             // We want to display the loading screen first
@@ -169,12 +144,12 @@ namespace OpenFaceOffline
 
             Dispatcher.Invoke(DispatcherPriority.Render, new TimeSpan(0, 0, 0, 0, 200), (Action)(() =>
             {
-                LoadingGrid.Visibility = System.Windows.Visibility.Hidden;
-                camerasPanel.Visibility = System.Windows.Visibility.Visible;
+                LoadingGrid.Visibility = Visibility.Hidden;
+                camerasPanel.Visibility = Visibility.Visible;
             }));
         }
 
-        public CameraSelection(List<Tuple<int, String, List<Tuple<int, int>>, OpenCVWrappers.RawImage>> cams)
+        public CameraSelection(List<Tuple<int, string, List<Tuple<int, int>>, OpenCVWrappers.RawImage>> cams)
         {
             InitializeComponent();
             this.cams = cams;
@@ -182,8 +157,8 @@ namespace OpenFaceOffline
 
             Dispatcher.Invoke(DispatcherPriority.Render, new TimeSpan(0, 0, 0, 0, 200), (Action)(() =>
             {
-                LoadingGrid.Visibility = System.Windows.Visibility.Hidden;
-                camerasPanel.Visibility = System.Windows.Visibility.Visible;
+                LoadingGrid.Visibility = Visibility.Hidden;
+                camerasPanel.Visibility = Visibility.Visible;
             }));
         }
 
@@ -198,7 +173,6 @@ namespace OpenFaceOffline
             }
             sample_images[idx].BorderThickness = new Thickness(4);
             sample_images[idx].BorderBrush = Brushes.Green;
-
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -223,13 +197,12 @@ namespace OpenFaceOffline
 
             selected_camera = new Tuple<int, int, int>(selected_camera_idx, resolution_selected.Item1, resolution_selected.Item2);
 
-            this.Close();
+            Close();
         }
 
         // Do not close it as user might want to open it again
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
         }
-
     }
 }
