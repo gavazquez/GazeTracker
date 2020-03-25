@@ -46,7 +46,7 @@ build:
   publish_nuget: true
 before_build:
   - nuget restore
-  - ps: & "$env:appveyor_build_folder\download_models.ps1"
+  - ps: '& "$env:appveyor_build_folder\download_models.ps1"'
 after_build:
 #ClientUpdater post build commands
  - ps: mkdir "$env:appveyor_build_folder\FinalFiles\$env:configuration\GazeTracker"
