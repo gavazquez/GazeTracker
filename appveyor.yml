@@ -15,7 +15,7 @@ skip_commits:
   files:
     - '**/*.md'
     - '**/*.editorconfig'
-image: Visual Studio 2017
+image: Visual Studio 2019
 
 #---------------------------------#
 #    environment configuration    #
@@ -50,7 +50,7 @@ before_build:
 after_build:
 #ClientUpdater post build commands
  - ps: mkdir "$env:appveyor_build_folder\FinalFiles\$env:configuration\GazeTracker"
- - ps: xcopy /s/y "$env:appveyor_build_folder\GazeTracker\bin\$env:configuration\*.*" "$env:appveyor_build_folder\FinalFiles\$env:configuration\GazeTracker"
+ - ps: xcopy /s/y "$env:appveyor_build_folder\GazeTracker\bin\$env:platform\$env:configuration\*.*" "$env:appveyor_build_folder\FinalFiles\$env:configuration\GazeTracker"
  #7zip everything
  - ps: 7z a "$env:appveyor_build_folder\GazeTracker-$env:configuration.zip" "$env:appveyor_build_folder\FinalFiles\$env:configuration\GazeTracker"
 #---------------------------------#
