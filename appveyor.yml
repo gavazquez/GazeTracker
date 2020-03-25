@@ -25,7 +25,7 @@ environment:
   smallversion: 1.0
 cache:
   - packages -> **\packages.config
-  - $env:appveyor_build_folder\Libs\model\patch_experts\*.dat
+  - Libs\model\patch_experts\
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
