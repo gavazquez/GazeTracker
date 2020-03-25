@@ -21,6 +21,12 @@ Just go to the [releases](../../releases) page
 8) Click ´start´ in OpenTrack
 9) You might need to adjust the axes. To do so, check [OpenTrack wiki](https://github.com/opentrack/opentrack/wiki)
 
-## Acknowledgment:
+## Tips:
 
-This tracker uses the amazing Tada's [OpenFace](https://github.com/TadasBaltrusaitis/OpenFace) API. It's a pity tough, that the AI model doens't work very well with people who wear glasses. Unfortunately, training an AI takes a lot of time and knowledge
+- Try to use a webcam with a wide field of view
+- Usually a lower resolution increase the framerate and makes the work easier for the AI
+
+## Acknowledgments:
+
+This tracker uses the amazing Tada's [OpenFace](https://github.com/TadasBaltrusaitis/OpenFace) API.  
+Unfortunately the ai model doesn't work well with people who wear glasses and training it takes a lot of time and knowledge
