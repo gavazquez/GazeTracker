@@ -22,7 +22,7 @@
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
 
-        <Label HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Column="1" Grid.Row="1" Background="DarkSalmon" Canvas.ZIndex="1" MouseDown="ResetButton_Click" Name="ResetButton" Content="Reset"/>
+        <!--<Label HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Column="1" Grid.Row="1" Background="DarkSalmon" Canvas.ZIndex="1" MouseDown="ResetButton_Click" Name="ResetButton" Content="Reset"/>-->
 
         <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
             <StackPanel Orientation="Horizontal">
@@ -32,6 +32,7 @@
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="2" VerticalAlignment="Top">
             <Button Name="PauseButton" Click="PauseButton_Click">Pause</Button>
+            <Button Name="ResetButton" Click="ResetButton_Click" Margin="0,3,0,0" >Reset</Button>
             <StackPanel VerticalAlignment="Center" Margin="0,20,0,0" Width="185">
                 <Label Name="headOrientationLabel" Margin="0,0,0,0" FontSize="18"  HorizontalContentAlignment="Left">Head Orientation</Label>
                 <StackPanel Orientation="Horizontal">

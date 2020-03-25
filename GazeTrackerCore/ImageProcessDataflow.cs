@@ -20,7 +20,7 @@ namespace GazeTrackerCore
 
         public bool Paused => frameProducer.Paused;
 
-        public double BitmapFps => bitmapFps.Fps;
+        public double CameraFps => cameraFps.Fps;
         public double LandmarkFps => landmarkFps.Fps;
         public double DetectedFps => detectedFps.Fps;
 
@@ -45,7 +45,7 @@ namespace GazeTrackerCore
         private readonly LandmarkExtractor landmarkExtractor;
         private readonly DataExtractor dataExtractor;
         private readonly UdpSender udpSender;
-        private readonly FpsDetector bitmapFps;
+        private readonly FpsDetector cameraFps;
         private readonly FpsDetector landmarkFps;
         private readonly FpsDetector detectedFps;
 
@@ -53,12 +53,11 @@ namespace GazeTrackerCore
 
         public ImageProcessDataflow(int cameraId, int width, int height, IPEndPoint udpEndpoint)
         {
-
             var faceModelParams = new FaceModelParameters(AppDomain.CurrentDomain.BaseDirectory, true, false, false);
 
             frameProducer = new FrameProducer(cameraId, width, height);
 
-            bitmapFps = new FpsDetector(tokenSource.Token);
+            cameraFps = new FpsDetector(tokenSource.Token);
             landmarkFps = new FpsDetector(tokenSource.Token);
             detectedFps = new FpsDetector(tokenSource.Token);
 
@@ -93,7 +92,7 @@ namespace GazeTrackerCore
                 BoundedCapacity = 1
             });
 
-            var bitmapFpsBlock = new ActionBlock<WriteableBitmap>(_ => bitmapFps.AddFrame(), new ExecutionDataflowBlockOptions
+            var cameraFpsBlock = new ActionBlock<FrameData>(_ => cameraFps.AddFrame(), new ExecutionDataflowBlockOptions
             {
                 CancellationToken = tokenSource.Token
             });
@@ -107,8 +106,8 @@ namespace GazeTrackerCore
             });
 
             FrameDataBroadcast.LinkTo(bitmapBlock);
+            FrameDataBroadcast.LinkTo(cameraFpsBlock);
             bitmapBlock.LinkTo(BitmapBroadcast);
-            BitmapBroadcast.LinkTo(bitmapFpsBlock);
 
             FrameDataBroadcast.LinkTo(landmarkBlock);
             landmarkBlock.LinkTo(LandmarkDataBroadcast);
@@ -146,7 +145,7 @@ namespace GazeTrackerCore
         {
             dataExtractor.Reset();
             landmarkExtractor.Reset();
-            bitmapFps.Reset();
+            cameraFps.Reset();
             landmarkFps.Reset();
             detectedFps.Reset();
         }

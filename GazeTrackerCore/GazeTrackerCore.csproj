@@ -57,10 +57,10 @@
   <ItemGroup>
     <Compile Include="Consumer\Extractor\DataExtractor.cs" />
     <Compile Include="Consumer\Extractor\ExtractorBase.cs" />
+    <Compile Include="Consumer\Extractor\LandmarkExtractor.cs" />
     <Compile Include="Consumer\FpsDetector.cs" />
     <Compile Include="ImageProcessDataflow.cs" />
     <Compile Include="Consumer\BitmapTransformer.cs" />
-    <Compile Include="Consumer\Extractor\LandmarkDetect.cs" />
     <Compile Include="Consumer\UdpSender.cs" />
     <Compile Include="Producer\FrameProducer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
