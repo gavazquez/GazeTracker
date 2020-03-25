@@ -19,8 +19,10 @@ namespace GazeTrackerCore
         private readonly FrameProducer frameProducer;
 
         public bool Paused => frameProducer.Paused;
-        public double Fps => fpsDetector.Fps;
-        public double BitmapFps => bitmapFpsDetector.Fps;
+
+        public double BitmapFps => bitmapFps.Fps;
+        public double LandmarkFps => landmarkFps.Fps;
+        public double DetectedFps => detectedFps.Fps;
 
         public BroadcastBlock<DetectedData> DetectedDataBroadcast { get; } = new BroadcastBlock<DetectedData>(f => f, new DataflowBlockOptions
         {
@@ -43,8 +45,9 @@ namespace GazeTrackerCore
         private readonly LandmarkExtractor landmarkExtractor;
         private readonly DataExtractor dataExtractor;
         private readonly UdpSender udpSender;
-        private readonly FpsDetector fpsDetector;
-        private readonly FpsDetector bitmapFpsDetector;
+        private readonly FpsDetector bitmapFps;
+        private readonly FpsDetector landmarkFps;
+        private readonly FpsDetector detectedFps;
 
         private static readonly CancellationTokenSource tokenSource = new CancellationTokenSource();
 
@@ -54,8 +57,11 @@ namespace GazeTrackerCore
             var faceModelParams = new FaceModelParameters(AppDomain.CurrentDomain.BaseDirectory, true, false, false);
 
             frameProducer = new FrameProducer(cameraId, width, height);
-            fpsDetector = new FpsDetector(tokenSource.Token);
-            bitmapFpsDetector = new FpsDetector(tokenSource.Token);
+
+            bitmapFps = new FpsDetector(tokenSource.Token);
+            landmarkFps = new FpsDetector(tokenSource.Token);
+            detectedFps = new FpsDetector(tokenSource.Token);
+
             udpSender = new UdpSender(udpEndpoint);
             sequenceReader = new SequenceReader(cameraId, width, height);
             landmarkExtractor = new LandmarkExtractor(faceModelParams);
@@ -87,11 +93,15 @@ namespace GazeTrackerCore
                 BoundedCapacity = 1
             });
 
-            var fpsBlock = new ActionBlock<DetectedData>(_ => fpsDetector.AddFrame(), new ExecutionDataflowBlockOptions
+            var bitmapFpsBlock = new ActionBlock<WriteableBitmap>(_ => bitmapFps.AddFrame(), new ExecutionDataflowBlockOptions
             {
                 CancellationToken = tokenSource.Token
             });
-            var bitmapFpsBlock = new ActionBlock<WriteableBitmap>(_ => bitmapFpsDetector.AddFrame(), new ExecutionDataflowBlockOptions
+            var landmarkFpsBlock = new ActionBlock<LandmarkData>(_ => landmarkFps.AddFrame(), new ExecutionDataflowBlockOptions
+            {
+                CancellationToken = tokenSource.Token
+            });
+            var detectedFpsBlock = new ActionBlock<DetectedData>(_ => detectedFps.AddFrame(), new ExecutionDataflowBlockOptions
             {
                 CancellationToken = tokenSource.Token
             });
@@ -103,10 +113,11 @@ namespace GazeTrackerCore
             FrameDataBroadcast.LinkTo(landmarkBlock);
             landmarkBlock.LinkTo(LandmarkDataBroadcast);
 
+            LandmarkDataBroadcast.LinkTo(landmarkFpsBlock);
             LandmarkDataBroadcast.LinkTo(dataDetectorBlock, l => l.DetectionSucceeded);
             dataDetectorBlock.LinkTo(DetectedDataBroadcast);
 
-            DetectedDataBroadcast.LinkTo(fpsBlock);
+            DetectedDataBroadcast.LinkTo(detectedFpsBlock);
             DetectedDataBroadcast.LinkTo(udpBlock);
         }
 
@@ -135,13 +146,15 @@ namespace GazeTrackerCore
         {
             dataExtractor.Reset();
             landmarkExtractor.Reset();
-            fpsDetector.Reset();
-            bitmapFpsDetector.Reset();
+            bitmapFps.Reset();
+            landmarkFps.Reset();
+            detectedFps.Reset();
         }
 
         public void Dispose()
         {
             Stop();
+
             frameProducer?.Dispose();
             dataExtractor?.Dispose();
             landmarkExtractor?.Dispose();

@@ -191,11 +191,12 @@ namespace GazeTracker.Windows
             dc.DrawText(txt, new Point(ActualWidth - confidence_width + 2, 2));
 
             var fps_width = (int)(84.0 * scaling);
-            var fps_height = (int)(28.0 * scaling);
+            var fps_height = (int)(38.0 * scaling);
 
             dc.DrawRoundedRectangle(Brushes.WhiteSmoke, new Pen(Brushes.Black, 0.5 * scaling), new Rect(0, 0, fps_width, fps_height), 3.0 * scaling, 3.0 * scaling);
 
-            var fps_txt = new FormattedText($"AI FPS: {(int)_dataFlow.Fps}\nCamera FPS:{(int)_dataFlow.BitmapFps}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
+            var fps_txt = new FormattedText($"Camera:{(int)_dataFlow.BitmapFps} fps\nAI: {(int)_dataFlow.LandmarkFps} fps\nDetected:{(int)_dataFlow.DetectedFps} fps",
+                CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
                 new Typeface("Verdana"), 10.0 * scaling, Brushes.Black, _pixelsPerDip);
 
             dc.DrawText(fps_txt, new Point(2.0 * scaling, 0));
