@@ -69,11 +69,11 @@
                 <Label Margin="0,0,0,0" FontSize="18" HorizontalAlignment="Left">Settings</Label>
                 <StackPanel Orientation="Horizontal" Margin="0,10,0,0" VerticalAlignment="Top">
                     <CheckBox Name="CbxShowBox" Unchecked="CbxShowBox_OnChecked" Checked="CbxShowBox_OnChecked" IsChecked="True" HorizontalAlignment="Left" Content="Show box"/>
-                    <CheckBox Name="CbxShowLandmarks" Unchecked="CbxShowLandmarks_OnChecked" Checked="CbxShowLandmarks_OnChecked" IsChecked="True" HorizontalAlignment="Right" Margin="10,0,0,0" Content="Show dots"/>
+                    <CheckBox Name="CbxShowLandmarks" Unchecked="CbxShowLandmarks_OnChecked" Checked="CbxShowLandmarks_OnChecked" IsChecked="False" HorizontalAlignment="Right" Margin="10,0,0,0" Content="Show dots"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
-                    <CheckBox Name="CbxShowEyes" Unchecked="CbxShowEyes_OnChecked" Checked="CbxShowEyes_OnChecked" IsChecked="True" HorizontalAlignment="Left" Margin="0,10,0,0" Content="Show eyes"/>
-                    <CheckBox Name="CbxShowGazeLines" Unchecked="CbxShowGazeLines_OnChecked" Checked="CbxShowGazeLines_OnChecked" IsChecked="True" HorizontalAlignment="Right" Margin="7,10,0,0" Content="Show gaze"/>
+                    <CheckBox Name="CbxShowEyes" Unchecked="CbxShowEyes_OnChecked" Checked="CbxShowEyes_OnChecked" IsChecked="False" HorizontalAlignment="Left" Margin="0,10,0,0" Content="Show eyes"/>
+                    <CheckBox Name="CbxShowGazeLines" Unchecked="CbxShowGazeLines_OnChecked" Checked="CbxShowGazeLines_OnChecked" IsChecked="False" HorizontalAlignment="Right" Margin="7,10,0,0" Content="Show gaze"/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>
