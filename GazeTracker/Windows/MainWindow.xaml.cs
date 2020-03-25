@@ -22,18 +22,15 @@ namespace GazeTracker.Windows
             InitializeComponent();
 
             var cameraSelection = new CameraSelection();
-            if (!cameraSelection.no_cameras_found)
+            if (cameraSelection.SelectedCamera == null)
             {
                 cameraSelection.ShowDialog();
             }
 
-            if (cameraSelection.camera_selected)
+            if (cameraSelection.SelectedCamera != null)
             {
-                var cameraId = cameraSelection.selected_camera.Item1;
-                var width = cameraSelection.selected_camera.Item2;
-                var height = cameraSelection.selected_camera.Item3;
-
-                _processDataFlow = new ImageProcessDataflow(cameraId, width, height, new IPEndPoint(IPAddress.Loopback, Port));
+                _processDataFlow = new ImageProcessDataflow(cameraSelection.SelectedCamera.Id, cameraSelection.SelectedCamera.SelectedResolution.Item1,
+                    cameraSelection.SelectedCamera.SelectedResolution.Item2, new IPEndPoint(IPAddress.Loopback, Port));
 
                 var webCamImg = new OverlayImage(_processDataFlow);
                 webCamImg.SetValue(Grid.RowProperty, 1);
@@ -83,7 +80,7 @@ namespace GazeTracker.Windows
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            _processDataFlow.Dispose();
+            _processDataFlow?.Dispose();
         }
 
         private void PauseButton_Click(object sender, RoutedEventArgs e)

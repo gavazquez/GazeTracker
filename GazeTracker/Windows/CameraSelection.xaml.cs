@@ -1,76 +1,82 @@
-﻿using System;
+﻿using OpenCVWrappers;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using UtilitiesOF;
 
 namespace GazeTracker.Windows
 {
+    public class Camera
+    {
+        public int Id { get; set; }
+        public int Index { get; set; }
+        public string Name { get; set; }
+        public Tuple<int, int> SelectedResolution { get; set; }
+        public List<Tuple<int, int>> Resolutions { get; set; }
+        public RawImage Image { get; }
+
+        public Camera(int id, int index, string name, List<Tuple<int, int>> resolutions, RawImage img)
+        {
+            Id = id;
+            Index = index;
+            Name = name;
+            Resolutions = resolutions.Where(i => i.Item1 > 0 && i.Item2 > 0).ToList();
+            Image = img;
+            SelectedResolution = Resolutions.OrderBy(c => c.Item1).First();
+        }
+    }
+
     public partial class CameraSelection : Window
     {
+        public Camera SelectedCamera { get; private set; }
+
         private List<Border> sample_images;
         private List<ComboBox> combo_boxes;
-
-        // id, width, height
-        public Tuple<int, int, int> selected_camera;
-
-        private List<List<Tuple<int, int>>> resolutions_all;
-        private int selected_camera_idx = -1;
-
-        // indicate if user clicked on camera
-        public bool camera_selected;
-        public bool no_cameras_found;
-
-        public List<Tuple<int, string, List<Tuple<int, int>>, OpenCVWrappers.RawImage>> cams;
 
         public void PopulateCameraSelections()
         {
             KeyDown += CameraSelection_KeyDown;
 
-            // Finding the cameras here
-            if (cams == null)
-            {
-                string root = AppDomain.CurrentDomain.BaseDirectory;
-                cams = UtilitiesOF.SequenceReader.GetCameras(root);
-            }
-
-            int i = 0;
+            var cameraList = SequenceReader.GetCameras(AppDomain.CurrentDomain.BaseDirectory);
+            var cameras = cameraList
+                .Select(c => new Camera(c.Item1, cameraList.IndexOf(c), c.Item2, c.Item3, c.Item4))
+                .ToList();
 
             sample_images = new List<Border>();
 
             // Each cameras corresponding resolutions
-            resolutions_all = new List<List<Tuple<int, int>>>();
             combo_boxes = new List<ComboBox>();
 
-            foreach (var s in cams)
+            foreach (var camera in cameras.Select((value, i) => new { i, value }))
             {
-
-                var b = s.Item4.CreateWriteableBitmap();
-                s.Item4.UpdateWriteableBitmap(b);
-                b.Freeze();
+                var bitmap = camera.value.Image.CreateWriteableBitmap();
+                camera.value.Image.UpdateWriteableBitmap(bitmap);
+                bitmap.Freeze();
 
                 Dispatcher.Invoke(() =>
                 {
-                    int idx = i;
                     Image img = new Image();
-                    img.Source = b;
+                    img.Source = bitmap;
                     img.Margin = new Thickness(5);
 
                     ColumnDefinition col_def = new ColumnDefinition();
                     ThumbnailPanel.ColumnDefinitions.Add(col_def);
 
                     Border img_border = new Border();
-                    img_border.SetValue(Grid.ColumnProperty, i);
+                    img_border.SetValue(Grid.ColumnProperty, camera.value.Id);
                     img_border.SetValue(Grid.RowProperty, 0);
                     img_border.CornerRadius = new CornerRadius(5);
 
                     StackPanel img_panel = new StackPanel();
 
                     Label camera_name_label = new Label();
-                    camera_name_label.Content = s.Item2;
+                    camera_name_label.Content = camera.value.Name;
                     camera_name_label.HorizontalAlignment = HorizontalAlignment.Center;
                     img_panel.Children.Add(camera_name_label);
                     img.Height = 200;
@@ -85,46 +91,28 @@ namespace GazeTracker.Windows
                     resolutions.Width = 80;
                     combo_boxes.Add(resolutions);
 
-                    resolutions_all.Add(new List<Tuple<int, int>>());
-
-                    foreach (var r in s.Item3)
+                    foreach (var r in camera.value.Resolutions)
                     {
                         resolutions.Items.Add(r.Item1 + "x" + r.Item2);
-                        resolutions_all[resolutions_all.Count - 1].Add(new Tuple<int, int>(r.Item1, r.Item2));
-
                     }
 
-                    resolutions.SelectedIndex = 0;
-                    for (int res = 0; res < s.Item3.Count; ++res)
-                    {
-                        if (s.Item3[res].Item1 >= 640 && s.Item3[res].Item2 >= 480)
-                        {
-                            resolutions.SelectedIndex = res;
-                            break;
-                        }
-                    }
-                    resolutions.SetValue(Grid.ColumnProperty, i);
+                    resolutions.SelectedIndex = camera.value.Resolutions.IndexOf(camera.value.SelectedResolution);
+                    resolutions.SetValue(Grid.ColumnProperty, camera.i);
                     resolutions.SetValue(Grid.RowProperty, 2);
                     ThumbnailPanel.Children.Add(resolutions);
 
-                    img_panel.MouseDown += (sender, e) => ChooseCamera(idx);
-                    resolutions.DropDownOpened += (sender, e) => ChooseCamera(idx);
-
+                    img_panel.MouseDown += (sender, e) => HighlightCamera(camera.value);
+                    resolutions.DropDownOpened += (sender, e) => HighlightCamera(camera.value);
                 });
-
-                i++;
             }
-            if (cams.Count > 0)
+            if (cameras.Count > 0)
             {
-                no_cameras_found = false;
-                Dispatcher.Invoke(DispatcherPriority.Render, new TimeSpan(0, 0, 0, 0, 200), (Action)(() => ChooseCamera(0)));
+                Dispatcher.Invoke(DispatcherPriority.Render, new TimeSpan(0, 0, 0, 0, 200), (Action)(() => HighlightCamera(cameras[0])));
             }
             else
             {
                 MessageBox.Show("No cameras detected, please connect a webcam", "Camera error!", MessageBoxButton.OK, MessageBoxImage.Warning);
-                selected_camera_idx = -1;
-                no_cameras_found = true;
-                Dispatcher.Invoke(DispatcherPriority.Render, new TimeSpan(0, 0, 0, 0, 200), (Action)(Close));
+                Dispatcher.Invoke(DispatcherPriority.Render, new TimeSpan(0, 0, 0, 0, 200), (Action)Close);
             }
         }
 
@@ -149,60 +137,29 @@ namespace GazeTracker.Windows
             }));
         }
 
-        public CameraSelection(List<Tuple<int, string, List<Tuple<int, int>>, OpenCVWrappers.RawImage>> cams)
+        private void HighlightCamera(Camera camera)
         {
-            InitializeComponent();
-            this.cams = cams;
-            PopulateCameraSelections();
-
-            Dispatcher.Invoke(DispatcherPriority.Render, new TimeSpan(0, 0, 0, 0, 200), (Action)(() =>
-            {
-                LoadingGrid.Visibility = Visibility.Hidden;
-                camerasPanel.Visibility = Visibility.Visible;
-            }));
-        }
-
-        private void ChooseCamera(int idx)
-        {
-            selected_camera_idx = idx;
-
             foreach (var img in sample_images)
             {
                 img.BorderThickness = new Thickness(1);
                 img.BorderBrush = Brushes.Gray;
             }
-            sample_images[idx].BorderThickness = new Thickness(4);
-            sample_images[idx].BorderBrush = Brushes.Green;
+            sample_images[camera.Index].BorderThickness = new Thickness(4);
+            sample_images[camera.Index].BorderBrush = Brushes.Green;
+            SelectedCamera = camera;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Select();
+            Close();
         }
 
         private void CameraSelection_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
-                Select();
+                Close();
             }
-        }
-
-        private void Select()
-        {
-            camera_selected = true;
-
-            int selected_res = combo_boxes[selected_camera_idx].SelectedIndex;
-            Tuple<int, int> resolution_selected = resolutions_all[selected_camera_idx][selected_res];
-
-            selected_camera = new Tuple<int, int, int>(selected_camera_idx, resolution_selected.Item1, resolution_selected.Item2);
-
-            Close();
-        }
-
-        // Do not close it as user might want to open it again
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
         }
     }
 }

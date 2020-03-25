@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Camera selection" Height="460" Width="600" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Closing="Window_Closing" Loaded="Window_Loaded">
+        Title="Camera selection" Height="460" Width="600" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid Name="camerasPanel" Visibility="Hidden">
             <Grid.RowDefinitions>
