@@ -13,7 +13,7 @@ namespace GazeTrackerCore.Consumer.Extractor
         {
         }
 
-        public DetectedData DetectionParameters(LandmarkData landmarkData)
+        public DetectedData ExtractData(LandmarkData landmarkData)
         {
             var confidence = FaceModel.GetConfidence();
             var pose = new List<float>();

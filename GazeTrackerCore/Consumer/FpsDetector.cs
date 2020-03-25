@@ -25,9 +25,14 @@ namespace GazeTrackerCore.Consumer
 
         private void DiscardOldFrames()
         {
-            while (FrameTimes.TryPeek(out var frameTime) && CurrentTime - frameTime > HistoryLength)
+            while (true)
             {
-                FrameTimes.TryDequeue(out _);
+                while (FrameTimes.TryPeek(out var frameTime) && CurrentTime - frameTime > HistoryLength)
+                {
+                    FrameTimes.TryDequeue(out _);
+                }
+
+                Thread.Sleep(10);
             }
         }
 

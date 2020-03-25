@@ -40,7 +40,7 @@ namespace GazeTrackerCore
         });
 
         private readonly SequenceReader sequenceReader;
-        private readonly LandmarkExtractor landmarkDetector;
+        private readonly LandmarkExtractor landmarkExtractor;
         private readonly DataExtractor dataExtractor;
         private readonly UdpSender udpSender;
         private readonly FpsDetector fpsDetector;
@@ -58,7 +58,7 @@ namespace GazeTrackerCore
             bitmapFpsDetector = new FpsDetector(tokenSource.Token);
             udpSender = new UdpSender(udpEndpoint);
             sequenceReader = new SequenceReader(cameraId, width, height);
-            landmarkDetector = new LandmarkExtractor(faceModelParams);
+            landmarkExtractor = new LandmarkExtractor(faceModelParams);
             dataExtractor = new DataExtractor(faceModelParams);
 
             var bitmapBlock = new TransformBlock<FrameData, WriteableBitmap>(frm => bitmapTransformer.ConvertToWritableBitmap(frm.Frame), new ExecutionDataflowBlockOptions
@@ -67,16 +67,18 @@ namespace GazeTrackerCore
                 TaskScheduler = TaskScheduler.FromCurrentSynchronizationContext()
             });
 
-            var landmarkBlock = new TransformBlock<FrameData, LandmarkData>(x => landmarkDetector.DetectLandmarks(x), new ExecutionDataflowBlockOptions
+            var landmarkBlock = new TransformBlock<FrameData, LandmarkData>(x => landmarkExtractor.DetectLandmarks(x), new ExecutionDataflowBlockOptions
             {
                 CancellationToken = tokenSource.Token,
-                BoundedCapacity = 1
+                BoundedCapacity = 1,
             });
 
-            var dataDetectorBlock = new TransformBlock<LandmarkData, DetectedData>(ld => dataExtractor.DetectionParameters(ld), new ExecutionDataflowBlockOptions
+            var dataDetectorBlock = new TransformBlock<LandmarkData, DetectedData>(ld => dataExtractor.ExtractData(ld), new ExecutionDataflowBlockOptions
             {
                 CancellationToken = tokenSource.Token,
-                BoundedCapacity = 1
+                MaxDegreeOfParallelism = 5,
+                EnsureOrdered = true,
+                BoundedCapacity = 2
             });
 
             var udpBlock = new ActionBlock<DetectedData>(d => udpSender.SendPoseData(d.Pose), new ExecutionDataflowBlockOptions
@@ -132,7 +134,7 @@ namespace GazeTrackerCore
         public void Reset()
         {
             dataExtractor.Reset();
-            landmarkDetector.Reset();
+            landmarkExtractor.Reset();
             fpsDetector.Reset();
             bitmapFpsDetector.Reset();
         }
@@ -142,7 +144,7 @@ namespace GazeTrackerCore
             Stop();
             frameProducer?.Dispose();
             dataExtractor?.Dispose();
-            landmarkDetector?.Dispose();
+            landmarkExtractor?.Dispose();
             sequenceReader?.Dispose();
             udpSender?.Dispose();
         }
