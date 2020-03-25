@@ -73,7 +73,7 @@ deploy:
    artifact: GazeTracker-$(configuration).zip
    auth_token:
     secure: zWJqDvz3LjR2J358JIJKICwghW/DWRzs73KWb3KApTLOreA4c8DN1tos+O3qBMR7
-   draft: false
+   draft: true
    force_update: true
    on:
     branch: master
