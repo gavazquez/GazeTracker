@@ -1,3 +1,10 @@
+<p align="center">
+    <a href="https://ci.appveyor.com/project/gavazquez/gazetracker"><img src="https://img.shields.io/appveyor/ci/gavazquez/lunamultiplayer/master.svg?style=flat&logo=appveyor" alt="AppVeyor"/></a>
+    <a href="https://paypal.me/gavazquez"><img src="https://img.shields.io/badge/paypal-donate-yellow.svg?style=flat&logo=paypal" alt="PayPal"/></a>
+    <a href="../../releases"><img src="https://img.shields.io/github/release/gavazquez/gazetracker.svg?style=flat&logo=github&logoColor=white" alt="Latest release" /></a>
+    <a href="../../releases"><img src="https://img.shields.io/github/downloads/gavazquez/gazetracker/total.svg?style=flat&logo=github&logoColor=white" alt="Total downloads" /></a>
+</p>
+
 # GazeTracker
 Tracker that uses an artificial intelligence to track the orientation and position of your face using a webcam
 
