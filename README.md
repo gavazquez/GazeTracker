@@ -35,5 +35,5 @@ Just go to the [releases](../../releases) page
 
 ## Acknowledgments:
 
-This tracker uses the amazing Tada's [OpenFace](https://github.com/TadasBaltrusaitis/OpenFace) API.  
-Unfortunately the ai model doesn't work well with people who wear glasses and training it takes a lot of time and knowledge
+This tracker uses the amazing [Tada's OpenFace API](https://github.com/TadasBaltrusaitis/OpenFace).  
+Unfortunately the AI model doesn't work well with people who wear glasses and training it takes a lot of time and knowledge
