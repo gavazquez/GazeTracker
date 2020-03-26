@@ -67,7 +67,7 @@ artifacts:
 
 deploy:
  - provider: GitHub
-   tag: $(smallversion)
+   tag: $(appveyor_build_version)
    release: GazeTracker $(smallversion)
    description: 'Build $(appveyor_build_version)'
    artifact: GazeTracker-$(configuration).zip
