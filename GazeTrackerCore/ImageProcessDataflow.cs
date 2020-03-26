@@ -15,11 +15,7 @@ namespace GazeTrackerCore
 {
     public sealed class ImageProcessDataflow : IDisposable
     {
-        private readonly BitmapTransformer bitmapTransformer = new BitmapTransformer();
-        private readonly FrameProducer frameProducer;
-
         public bool Paused => frameProducer.Paused;
-
         public double CameraFps => cameraFps.Fps;
         public double LandmarkFps => landmarkFps.Fps;
         public double DetectedFps => detectedFps.Fps;
@@ -41,6 +37,8 @@ namespace GazeTrackerCore
             CancellationToken = tokenSource.Token
         });
 
+        private readonly BitmapTransformer bitmapTransformer = new BitmapTransformer();
+        private readonly FrameProducer frameProducer;
         private readonly SequenceReader sequenceReader;
         private readonly LandmarkExtractor landmarkExtractor;
         private readonly DataExtractor dataExtractor;
@@ -81,9 +79,7 @@ namespace GazeTrackerCore
             var dataDetectorBlock = new TransformBlock<LandmarkData, DetectedData>(ld => dataExtractor.ExtractData(ld), new ExecutionDataflowBlockOptions
             {
                 CancellationToken = tokenSource.Token,
-                MaxDegreeOfParallelism = 5,
-                EnsureOrdered = true,
-                BoundedCapacity = 2
+                BoundedCapacity = 1
             });
 
             var udpBlock = new ActionBlock<DetectedData>(d => udpSender.SendPoseData(d.Pose), new ExecutionDataflowBlockOptions
@@ -92,18 +88,9 @@ namespace GazeTrackerCore
                 BoundedCapacity = 1
             });
 
-            var cameraFpsBlock = new ActionBlock<FrameData>(_ => cameraFps.AddFrame(), new ExecutionDataflowBlockOptions
-            {
-                CancellationToken = tokenSource.Token
-            });
-            var landmarkFpsBlock = new ActionBlock<LandmarkData>(_ => landmarkFps.AddFrame(), new ExecutionDataflowBlockOptions
-            {
-                CancellationToken = tokenSource.Token
-            });
-            var detectedFpsBlock = new ActionBlock<DetectedData>(_ => detectedFps.AddFrame(), new ExecutionDataflowBlockOptions
-            {
-                CancellationToken = tokenSource.Token
-            });
+            var cameraFpsBlock = new ActionBlock<FrameData>(_ => cameraFps.AddFrame(), new ExecutionDataflowBlockOptions { CancellationToken = tokenSource.Token });
+            var landmarkFpsBlock = new ActionBlock<LandmarkData>(_ => landmarkFps.AddFrame(), new ExecutionDataflowBlockOptions { CancellationToken = tokenSource.Token });
+            var detectedFpsBlock = new ActionBlock<DetectedData>(_ => detectedFps.AddFrame(), new ExecutionDataflowBlockOptions { CancellationToken = tokenSource.Token });
 
             FrameDataBroadcast.LinkTo(bitmapBlock);
             FrameDataBroadcast.LinkTo(cameraFpsBlock);
@@ -131,11 +118,6 @@ namespace GazeTrackerCore
                 TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
-        public void Stop()
-        {
-            tokenSource.Cancel();
-        }
-
         public void ChangeUdpEndpoint(IPEndPoint newEndpoint)
         {
             udpSender?.Connect(newEndpoint);
@@ -152,7 +134,7 @@ namespace GazeTrackerCore
 
         public void Dispose()
         {
-            Stop();
+            tokenSource.Cancel();
 
             frameProducer?.Dispose();
             dataExtractor?.Dispose();
