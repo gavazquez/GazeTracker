@@ -18,7 +18,7 @@ Just go to the [releases](../../releases) page
 
 ## Usage:
 
-1) Run ´GazeTracker.exe´
+1) Run `GazeTracker.exe`
 2) Select the webcam and the resolution you want to use
 3) Once it's running check that your face angles and position is correctly detected. It works better if the camera is far away and you **don't wear glasses** or things that cover your face that could mess the AI
 4) Check the port number at the bottom of ´GazeTracker´ and change it if you want
