@@ -30,7 +30,7 @@ Just go to the [releases](../../releases) page
 
 ## Tips:
 
-- Try to use a webcam with a wide field of view
+- Try to use a webcam with a wide field of view and at eye level to correctly detect pitch angles
 - Usually a lower resolution increase the framerate and makes the work easier for the AI
 
 ## Acknowledgments:
