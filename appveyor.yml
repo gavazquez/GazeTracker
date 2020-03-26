@@ -38,7 +38,6 @@ assembly_info:
 #---------------------------------#
 
 configuration:
- - Debug
  - Release
 platform: x64
 build:
@@ -49,18 +48,19 @@ before_build:
   - nuget restore
   - ps: '& "$env:appveyor_build_folder\download_models.ps1"'
 after_build:
-#ClientUpdater post build commands
  - ps: mkdir "$env:appveyor_build_folder\FinalFiles\$env:configuration\GazeTracker"
  - ps: xcopy /s/y "$env:appveyor_build_folder\GazeTracker\bin\$env:platform\$env:configuration\*.*" "$env:appveyor_build_folder\FinalFiles\$env:configuration\GazeTracker"
  #7zip everything
- - ps: 7z a "$env:appveyor_build_folder\GazeTracker-$env:configuration.zip" "$env:appveyor_build_folder\FinalFiles\$env:configuration\GazeTracker"
+ - ps: 7z a "$env:appveyor_build_folder\GazeTracker.zip" "$env:appveyor_build_folder\FinalFiles\$env:configuration\GazeTracker"
+
 #---------------------------------#
 #      artifacts configuration    #
 #---------------------------------#
 
 artifacts:
- - path: .\GazeTracker-$(configuration).zip
-   name: GazeTracker-$(configuration).zip
+ - path: .\GazeTracker.zip
+   name: GazeTracker.zip
+
 #---------------------------------#
 #     deployment configuration    #
 #---------------------------------#
@@ -70,7 +70,7 @@ deploy:
    tag: $(appveyor_build_version)
    release: GazeTracker $(smallversion)
    description: 'Build $(appveyor_build_version)'
-   artifact: GazeTracker-$(configuration).zip
+   artifact: GazeTracker.zip
    auth_token:
     secure: zWJqDvz3LjR2J358JIJKICwghW/DWRzs73KWb3KApTLOreA4c8DN1tos+O3qBMR7
    draft: true
