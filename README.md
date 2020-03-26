@@ -24,7 +24,7 @@ Just go to the [releases](../../releases) page
 4) Check the port number at the bottom of `GazeTracker` and change it if you want
 5) Open `OpenTrack`
 6) In the `Input` dropdown of OpenTrack select `UDP over network`
-7) Click on the button next to the `Input` dropdown and in the popup write **the same port that you've selected before**
+7) Click on the button next to the `Input` dropdown and in the popup write **the same port that you selected before**
 8) Click `start` in OpenTrack
 9) You might need to adjust the axes. To do so, check the [OpenTrack wiki](https://github.com/opentrack/opentrack/wiki)
 
