@@ -3,17 +3,19 @@ using GazeTrackerCore.Settings;
 using GazeTrackerCore.Structures;
 using System;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Threading;
 
 namespace GazeTracker.Windows
 {
     public partial class MainWindow : Window
     {
         private readonly ImageProcessDataflow _processDataFlow;
+        private readonly CancellationTokenSource tokenSrc = new CancellationTokenSource();
 
         private ushort Port => ushort.Parse(UdpPort.Text);
 
@@ -29,18 +31,21 @@ namespace GazeTracker.Windows
 
             if (cameraSelection.SelectedCamera != null)
             {
-                _processDataFlow = new ImageProcessDataflow(cameraSelection.SelectedCamera.Id, cameraSelection.SelectedCamera.SelectedResolution.Item1,
-                    cameraSelection.SelectedCamera.SelectedResolution.Item2, new IPEndPoint(IPAddress.Loopback, Port));
+                _processDataFlow = new ImageProcessDataflow(cameraSelection.SelectedCamera, cameraSelection.SelectedCamera.SelectedResolution.Item1,
+                    cameraSelection.SelectedCamera.SelectedResolution.Item2, new IPEndPoint(IPAddress.Loopback, Port), tokenSrc.Token);
 
-                var webCamImg = new OverlayImage(_processDataFlow);
+                var webCamImg = new OverlayImage(_processDataFlow, tokenSrc.Token);
                 webCamImg.SetValue(Grid.RowProperty, 1);
                 webCamImg.SetValue(Grid.ColumnProperty, 1);
                 MainGrid.Children.Add(webCamImg);
 
-                var updateLabelsBlock = new ActionBlock<DetectedData>(UpdateLabelsWithData);
-                _processDataFlow.DetectedDataBroadcast.LinkTo(updateLabelsBlock);
+                var updateLabelsBlock = new ActionBlock<DetectedData>(UpdateLabelsWithData, new ExecutionDataflowBlockOptions
+                {
+                    CancellationToken = tokenSrc.Token,
+                    TaskScheduler = TaskScheduler.FromCurrentSynchronizationContext()
+                });
 
-                _processDataFlow.Start();
+                _processDataFlow.DetectedDataBroadcast.LinkTo(updateLabelsBlock);
             }
             else
             {
@@ -57,20 +62,17 @@ namespace GazeTracker.Windows
             var yaw = (data.Pose[4] * 180 / Math.PI) + 0.5;
             var roll = (data.Pose[5] * 180 / Math.PI) + 0.5;
 
-            Dispatcher.Invoke(DispatcherPriority.Render, new TimeSpan(0, 0, 0, 0, 200), (Action)(() =>
-            {
-                YawLabel.Content = $"{Math.Abs(yaw):0}°";
-                RollLabel.Content = $"{Math.Abs(roll):0}°";
-                PitchLabel.Content = $"{Math.Abs(pitch):0}°";
+            YawLabel.Content = $"{Math.Abs(yaw):0}°";
+            RollLabel.Content = $"{Math.Abs(roll):0}°";
+            PitchLabel.Content = $"{Math.Abs(pitch):0}°";
 
-                YawLabelDir.Content = yaw > 0 ? "Right" : yaw < 0 ? "Left" : "Straight";
-                PitchLabelDir.Content = pitch > 0 ? "Down" : pitch < 0 ? "Up" : "Straight";
-                RollLabelDir.Content = roll > 0 ? "Left" : roll < 0 ? "Right" : "Straight";
+            YawLabelDir.Content = yaw > 0 ? "Right" : yaw < 0 ? "Left" : "Straight";
+            PitchLabelDir.Content = pitch > 0 ? "Down" : pitch < 0 ? "Up" : "Straight";
+            RollLabelDir.Content = roll > 0 ? "Left" : roll < 0 ? "Right" : "Straight";
 
-                XPoseLabel.Content = $"{data.Pose[0]:0} mm";
-                YPoseLabel.Content = $"{data.Pose[1]:0} mm";
-                ZPoseLabel.Content = $"{data.Pose[2]:0} mm";
-            }));
+            XPoseLabel.Content = $"{data.Pose[0]:0} mm";
+            YPoseLabel.Content = $"{data.Pose[1]:0} mm";
+            ZPoseLabel.Content = $"{data.Pose[2]:0} mm";
         }
 
         private void ResetButton_Click(object sender, RoutedEventArgs e)
@@ -80,6 +82,7 @@ namespace GazeTracker.Windows
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            tokenSrc.Cancel();
             _processDataFlow?.Dispose();
         }
 

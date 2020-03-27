@@ -4,12 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 
 namespace GazeTracker.Windows
 {
@@ -28,11 +29,15 @@ namespace GazeTracker.Windows
         private readonly double _pixelsPerDip;
         private readonly ImageProcessDataflow _dataFlow;
 
-        public OverlayImage(ImageProcessDataflow dataFlow)
+        public OverlayImage(ImageProcessDataflow dataFlow, CancellationToken token)
         {
             _dataFlow = dataFlow;
             var cleanBlock = new ActionBlock<LandmarkData>(_ => Clear());
-            var bitmapBlock = new ActionBlock<WriteableBitmap>(BitmapReceived);
+            var bitmapBlock = new ActionBlock<WriteableBitmap>(bitmap => Source = bitmap, new ExecutionDataflowBlockOptions
+            {
+                CancellationToken = token,
+                TaskScheduler = TaskScheduler.FromCurrentSynchronizationContext()
+            });
             var detectionBlock = new ActionBlock<DetectedData>(DetectedData);
 
             dataFlow.LandmarkDataBroadcast.LinkTo(cleanBlock, l => !l.DetectionSucceeded);
@@ -46,16 +51,6 @@ namespace GazeTracker.Windows
             OverlayPointsVisibility = new List<bool>();
             OverlayEyePoints = new List<Point>();
             GazeLines = new List<Tuple<Point, Point>>();
-        }
-
-        private void BitmapReceived(WriteableBitmap bitmap)
-        {
-            Dispatcher.Invoke(DispatcherPriority.Render, new TimeSpan(0, 0, 0, 0, 200), (Action)(() => Source = bitmap));
-        }
-
-        private void OnDetectionFailed(object source, EventArgs e)
-        {
-            Dispatcher.Invoke(Clear);
         }
 
         private void DetectedData(DetectedData data)

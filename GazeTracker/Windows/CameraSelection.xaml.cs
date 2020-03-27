@@ -1,4 +1,4 @@
-﻿using OpenCVWrappers;
+﻿using GrazeTracker.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,26 +12,6 @@ using UtilitiesOF;
 
 namespace GazeTracker.Windows
 {
-    public class Camera
-    {
-        public int Id { get; set; }
-        public int Index { get; set; }
-        public string Name { get; set; }
-        public Tuple<int, int> SelectedResolution { get; set; }
-        public List<Tuple<int, int>> Resolutions { get; set; }
-        public RawImage Image { get; }
-
-        public Camera(int id, int index, string name, List<Tuple<int, int>> resolutions, RawImage img)
-        {
-            Id = id;
-            Index = index;
-            Name = name;
-            Resolutions = resolutions.Where(i => i.Item1 > 0 && i.Item2 > 0).ToList();
-            Image = img;
-            SelectedResolution = Resolutions.OrderBy(c => c.Item1).First();
-        }
-    }
-
     public partial class CameraSelection : Window
     {
         public Camera SelectedCamera { get; private set; }
@@ -45,7 +25,7 @@ namespace GazeTracker.Windows
 
             var cameraList = SequenceReader.GetCameras(AppDomain.CurrentDomain.BaseDirectory);
             var cameras = cameraList
-                .Select(c => new Camera(c.Item1, cameraList.IndexOf(c), c.Item2, c.Item3, c.Item4))
+                .Select(c => new Camera(c.Item1.ToString(), cameraList.IndexOf(c), c.Item2, c.Item3, c.Item4.CreateWriteableBitmap(), CameraType.Webcam))
                 .ToList();
 
             sample_images = new List<Border>();
@@ -55,14 +35,10 @@ namespace GazeTracker.Windows
 
             foreach (var camera in cameras.Select((value, i) => new { i, value }))
             {
-                var bitmap = camera.value.Image.CreateWriteableBitmap();
-                camera.value.Image.UpdateWriteableBitmap(bitmap);
-                bitmap.Freeze();
-
                 Dispatcher.Invoke(() =>
                 {
                     Image img = new Image();
-                    img.Source = bitmap;
+                    img.Source = camera.value.Image;
                     img.Margin = new Thickness(5);
 
                     ColumnDefinition col_def = new ColumnDefinition();
