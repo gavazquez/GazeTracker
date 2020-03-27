@@ -1,7 +1,7 @@
-﻿using System;
+﻿using OpenCVWrappers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Media;
 
 namespace GrazeTracker.Common
 {
@@ -18,13 +18,11 @@ namespace GrazeTracker.Common
         public string Name { get; set; }
         public Tuple<int, int> SelectedResolution { get; set; }
         public List<Tuple<int, int>> Resolutions { get; set; }
-        public ImageSource Image { get; }
+        public RawImage Image { get; }
         public CameraType CameraType { get; }
 
-        public Camera(string id, int index, string name, List<Tuple<int, int>> resolutions, ImageSource img, CameraType cameraType)
+        public Camera(string id, int index, string name, List<Tuple<int, int>> resolutions, RawImage img, CameraType cameraType)
         {
-            img.Freeze();
-
             Id = id;
             Index = index;
             Name = name;

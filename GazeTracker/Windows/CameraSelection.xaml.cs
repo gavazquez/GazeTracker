@@ -25,7 +25,7 @@ namespace GazeTracker.Windows
 
             var cameraList = SequenceReader.GetCameras(AppDomain.CurrentDomain.BaseDirectory);
             var cameras = cameraList
-                .Select(c => new Camera(c.Item1.ToString(), cameraList.IndexOf(c), c.Item2, c.Item3, c.Item4.CreateWriteableBitmap(), CameraType.Webcam))
+                .Select(c => new Camera(c.Item1.ToString(), cameraList.IndexOf(c), c.Item2, c.Item3, c.Item4, CameraType.Webcam))
                 .ToList();
 
             sample_images = new List<Border>();
@@ -35,17 +35,21 @@ namespace GazeTracker.Windows
 
             foreach (var camera in cameras.Select((value, i) => new { i, value }))
             {
+                var bitmap = camera.value.Image.CreateWriteableBitmap();
+                camera.value.Image.UpdateWriteableBitmap(bitmap);
+                bitmap.Freeze();
+
                 Dispatcher.Invoke(() =>
                 {
                     Image img = new Image();
-                    img.Source = camera.value.Image;
+                    img.Source = bitmap;
                     img.Margin = new Thickness(5);
 
                     ColumnDefinition col_def = new ColumnDefinition();
                     ThumbnailPanel.ColumnDefinitions.Add(col_def);
 
                     Border img_border = new Border();
-                    img_border.SetValue(Grid.ColumnProperty, camera.value.Id);
+                    img_border.SetValue(Grid.ColumnProperty, camera.value.Index);
                     img_border.SetValue(Grid.RowProperty, 0);
                     img_border.CornerRadius = new CornerRadius(5);
 
