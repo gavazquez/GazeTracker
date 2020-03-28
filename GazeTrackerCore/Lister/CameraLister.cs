@@ -35,7 +35,7 @@ namespace GazeTrackerCore.Lister
                 videoSource.SignalToStop();
                 videoSource.WaitForStop();
 
-                var camera = new Camera(device.MonikerString, device.Name, resolutions, new RawImage(bitmap), CameraType.Ps3Eye);
+                var camera = new Camera(device.MonikerString, device.Name, resolutions, new RawImage(new Bitmap(bitmap)), CameraType.Ps3Eye);
                 bitmap = null;
 
                 yield return camera;

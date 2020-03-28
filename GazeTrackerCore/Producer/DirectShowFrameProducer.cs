@@ -37,6 +37,7 @@ namespace GazeTrackerCore.Producer
 		{
 			base.Dispose();
 			_videoSource.SignalToStop();
+			_videoSource.WaitForStop();
 		}
 
 		public override void ReadFrames(BroadcastBlock<FrameData> broadcast)
