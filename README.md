@@ -23,8 +23,8 @@ Just go to the [releases](../../releases) page
 8) Click `start` in OpenTrack
 9) You might need to adjust the axes. To do so, check the [OpenTrack wiki](https://github.com/opentrack/opentrack/wiki)
 
-## Playstation 3 Eye toy
-You will need to have the CL Eye Driver installed if you want to use this webcam. You can get it [here](https://archive.org/download/CLEyeDriver5.3.0.0341Emuline/CL-Eye-Driver-5.3.0.0341-Emuline.exe)
+## Playstation 3 Eye
+You will need to have the CL Eye Driver installed if you want to use this type of webcam. You can get it [here](https://archive.org/download/CLEyeDriver5.3.0.0341Emuline/CL-Eye-Driver-5.3.0.0341-Emuline.exe)
 
 ## Tips:
 
