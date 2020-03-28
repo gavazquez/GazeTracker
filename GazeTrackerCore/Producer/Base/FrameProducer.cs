@@ -22,7 +22,7 @@ namespace GazeTrackerCore.Producer.Base
         protected abstract float GetCx();
         protected abstract float GetCy();
 
-        public void ReadFrames(BroadcastBlock<FrameData> broadcast)
+        public virtual void ReadFrames(BroadcastBlock<FrameData> broadcast)
         {
             while (true)
             {

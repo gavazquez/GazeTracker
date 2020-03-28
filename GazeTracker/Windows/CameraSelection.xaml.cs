@@ -1,4 +1,5 @@
-﻿using GrazeTracker.Common;
+﻿using GazeTrackerCore.Lister;
+using GrazeTracker.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using UtilitiesOF;
 
 namespace GazeTracker.Windows
 {
@@ -23,18 +23,16 @@ namespace GazeTracker.Windows
         {
             KeyDown += CameraSelection_KeyDown;
 
-            var cameraList = SequenceReader.GetCameras(AppDomain.CurrentDomain.BaseDirectory);
-            var cameras = cameraList
-                .Select(c => new Camera(c.Item1.ToString(), cameraList.IndexOf(c), c.Item2, c.Item3, c.Item4, CameraType.Webcam))
-                .ToList();
+            var cameraList = CameraLister.GetAvailableCameras();
 
             sample_images = new List<Border>();
 
             // Each cameras corresponding resolutions
             combo_boxes = new List<ComboBox>();
 
-            foreach (var camera in cameras.Select((value, i) => new { i, value }))
+            foreach (var camera in cameraList.Select((value, i) => new { i, value }))
             {
+                camera.value.Index = camera.i;
                 var bitmap = camera.value.Image.CreateWriteableBitmap();
                 camera.value.Image.UpdateWriteableBitmap(bitmap);
                 bitmap.Freeze();
@@ -85,9 +83,11 @@ namespace GazeTracker.Windows
                     resolutions.DropDownOpened += (sender, e) => HighlightCamera(camera.value);
                 });
             }
-            if (cameras.Count > 0)
+
+            var firstCamera = cameraList.FirstOrDefault();
+            if (firstCamera != null)
             {
-                Dispatcher.Invoke(DispatcherPriority.Render, new TimeSpan(0, 0, 0, 0, 200), (Action)(() => HighlightCamera(cameras[0])));
+                Dispatcher.Invoke(DispatcherPriority.Render, new TimeSpan(0, 0, 0, 0, 200), (Action)(() => HighlightCamera(firstCamera)));
             }
             else
             {

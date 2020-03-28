@@ -21,10 +21,9 @@ namespace GrazeTracker.Common
         public RawImage Image { get; }
         public CameraType CameraType { get; }
 
-        public Camera(string id, int index, string name, List<Tuple<int, int>> resolutions, RawImage img, CameraType cameraType)
+        public Camera(string id, string name, List<Tuple<int, int>> resolutions, RawImage img, CameraType cameraType)
         {
             Id = id;
-            Index = index;
             Name = name;
             Resolutions = resolutions.Where(i => i.Item1 > 0 && i.Item2 > 0).ToList();
             Image = img;

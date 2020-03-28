@@ -40,8 +40,8 @@ namespace GazeTrackerCore
             var faceModelParams = new FaceModelParameters(AppDomain.CurrentDomain.BaseDirectory, true, false, false);
 
             frameProducer = camera.CameraType == CameraType.Webcam
-                ? new WebcamFrameProducer(int.Parse(camera.Id), width, height) : null;
-            //: (FrameProducer)new Ps3EyeFrameProducer(Guid.Parse(camera.Id));
+                ? new WebcamFrameProducer(int.Parse(camera.Id), width, height)
+                : (FrameProducer)new DirectShowFrameProducer(camera.Id, width, height);
 
             cameraFps = new FpsDetector(token);
             landmarkFps = new FpsDetector(token);

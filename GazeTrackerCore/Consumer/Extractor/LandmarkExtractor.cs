@@ -16,7 +16,8 @@ namespace GazeTrackerCore.Consumer.Extractor
         {
             if (Paused) return new LandmarkData(frame, FaceModel, false);
 
-            var detectionSuccessful = FaceModel.DetectLandmarksInVideo(frame.Frame, ModelParams, frame.GrayFrame);
+            var detectionSuccessful = frame.GrayFrame != null ? FaceModel.DetectLandmarksInVideo(frame.Frame, ModelParams, frame.GrayFrame) :
+                FaceModel.DetectLandmarksInVideo(frame.Frame, ModelParams);
 
             if (DetectionSettings.CalculateGazeLines)
                 GazeAnalyzer.AddNextFrame(FaceModel, detectionSuccessful, frame.Fx, frame.Fy, frame.Cx, frame.Cy);
