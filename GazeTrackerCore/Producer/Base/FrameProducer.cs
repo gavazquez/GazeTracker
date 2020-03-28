@@ -13,7 +13,7 @@ namespace GazeTrackerCore.Producer.Base
         private float Cx;
         private float Cy;
 
-        private CancellationTokenSource cts = new CancellationTokenSource();
+        private readonly CancellationTokenSource cts = new CancellationTokenSource();
 
         protected abstract RawImage GetNextFrame();
         protected abstract RawImage GetGrayFrame();
