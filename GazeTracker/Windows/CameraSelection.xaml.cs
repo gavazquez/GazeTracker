@@ -81,6 +81,7 @@ namespace GazeTracker.Windows
 
                     img_panel.MouseDown += (sender, e) => HighlightCamera(camera.value);
                     resolutions.DropDownOpened += (sender, e) => HighlightCamera(camera.value);
+                    resolutions.DropDownClosed += (sender, e) => ResolutionChanged(camera.value, resolutions);
                 });
             }
 
@@ -94,6 +95,11 @@ namespace GazeTracker.Windows
                 MessageBox.Show("No cameras detected, please connect a webcam", "Camera error!", MessageBoxButton.OK, MessageBoxImage.Warning);
                 Dispatcher.Invoke(DispatcherPriority.Render, new TimeSpan(0, 0, 0, 0, 200), (Action)Close);
             }
+        }
+
+        private void ResolutionChanged(Camera camera, ComboBox resolutions)
+        {
+            camera.SelectedResolution = camera.Resolutions[resolutions.SelectedIndex];
         }
 
         public CameraSelection()

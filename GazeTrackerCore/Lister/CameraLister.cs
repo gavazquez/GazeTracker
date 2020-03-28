@@ -17,6 +17,7 @@ namespace GazeTrackerCore.Lister
 
         public static IEnumerable<Camera> GetAvailableCameras()
         {
+            //Only list PS3Eye cameras
             foreach (var device in new FilterInfoCollection(FilterCategory.VideoInputDevice).Cast<FilterInfo>().Where(d => d.Name.StartsWith("PS3")))
             {
                 VideoCaptureDevice videoSource = new VideoCaptureDevice(device.MonikerString);
@@ -40,7 +41,8 @@ namespace GazeTrackerCore.Lister
                 yield return camera;
             }
 
-            foreach (var camera in SequenceReader.GetCameras(AppDomain.CurrentDomain.BaseDirectory)
+            //Do not list PS3Eye camera with OpenFace as it's limited to 30FPS
+            foreach (var camera in SequenceReader.GetCameras(AppDomain.CurrentDomain.BaseDirectory).Where(d => !d.Item2.StartsWith("PS3"))
                 .Select(c => new Camera(c.Item1.ToString(), c.Item2, c.Item3, c.Item4, CameraType.Webcam)))
             {
                 yield return camera;

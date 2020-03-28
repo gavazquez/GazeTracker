@@ -10,11 +10,6 @@ Tracker that uses an artificial intelligence to track the orientation and positi
 
 ## Download:
 Just go to the [releases](../../releases) page
- 
-## Compiling:
-
-1) You need to run the `download_models.ps1` script to download the AI models (~500 Mb).  
-2) Build it with visual studio 2019 and make sure that the `Libs` content is copied to the output
 
 ## Usage:
 
@@ -28,10 +23,18 @@ Just go to the [releases](../../releases) page
 8) Click `start` in OpenTrack
 9) You might need to adjust the axes. To do so, check the [OpenTrack wiki](https://github.com/opentrack/opentrack/wiki)
 
+## Playstation 3 Eye toy
+You will need to have the CL Eye Driver installed if you want to use this webcam. You can get it [here](https://archive.org/download/CLEyeDriver5.3.0.0341Emuline/CL-Eye-Driver-5.3.0.0341-Emuline.exe)
+
 ## Tips:
 
 - Try to use a webcam with a wide field of view and at eye level to correctly detect pitch angles
 - Usually a lower resolution increase the framerate and makes the work easier for the AI
+
+## Compiling:
+
+1) You need to run the `download_models.ps1` script to download the AI models (~500 Mb).  
+2) Build it with visual studio 2019 and make sure that the `Libs` content is copied to the output
 
 ## Acknowledgments:
 
